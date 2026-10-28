@@ -1,19 +1,18 @@
-let ghost = { x: 240, y: 180 };
+let ghost;
+let spawnEvery = 60;
 let score = 0;
+let duration = 30;
+let startTime;
 
 function setup() {
   createCanvas(480, 360);
+  spawnGhost();
+  startTime = millis();
 }
 
 function draw() {
   background(15, 10, 25);
   noStroke();
-  drawGhost(240, 180);
-  drawGhost(100, 80);
-
-  ghost.x += random(-3, 3);
-  ghost.y += random(-3, 3);
-  drawGhost(ghost.x, ghost.y);
 
   fill(255, 240, 200);
   ellipse(400, 60, 50, 50);
@@ -21,9 +20,19 @@ function draw() {
   fill(40, 30, 50);
   rect(0, 300, 480, 60);
 
+  if (frameCount % spawnEvery === 0) spawnGhost();
+  drawGhost(ghost.x, ghost.y);
+
   fill(255);
   textSize(16);
-  text('Score: ' + score, 12, 26);
+  text('Score: ' + score, 70, 10);
+
+  let elapsed = (millis() - startTime) / 1000;
+  let timeLeft = max(0, duration - elapsed);
+
+  textAlign(RIGHT, TOP);
+  text('Time: ' + ceil(timeLeft), width - 12, 10);
+
 }
 
 function drawGhost(x, y) {
@@ -36,10 +45,13 @@ function drawGhost(x, y) {
   ellipse(x + 12, y - 5, 10);
 }
 
+function spawnGhost() {
+  ghost = { x: random(40, width - 40), y: random(40, height - 40) };
+}
+
 function mousePressed() {
   if (dist(mouseX, mouseY, ghost.x, ghost.y) < 30) {
     score++;
-    ghost.x = random(60, 420);
-    ghost.y = random(60, 300);
+    spawnGhost();
   }
 }
